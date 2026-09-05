@@ -1,254 +1,251 @@
 # Static Site Template
 
-静的サイト（LP・コーポレート・キャンペーンサイト）を作るための制作テンプレートです。
-SPA フレームワークは使わず、**EJS でページを組み、Sass でスタイルを書き、webpack で JS を束ねる**という
-昔ながらの構成を、いまの Node と CSS で動くように整えたものです。
+This is a production template for building static sites (landing pages, corporate sites, campaign sites).
+Rather than using an SPA framework, it takes the traditional approach of **building pages with EJS, writing styles with Sass, and bundling JS with webpack**, updated to work with current Node and CSS tooling.
 
 ```
-npm install     # 初回のみ
-npm run dev     # 開発（http://localhost:3000 が開きます）
-npm run build   # 納品物を release/ に出力
+npm install     # first time only
+npm run dev     # development (opens http://localhost:3000)
+npm run build   # outputs the deliverable to release/
 ```
 
-> コマンドはすべて `htdocs/` の中で実行します。
+> Run all commands from inside `htdocs/`.
 
 ---
 
-## 目次
+## Table of Contents
 
-- [必要な環境](#必要な環境)
-- [はじめかた](#はじめかた)
-- [コマンド一覧](#コマンド一覧)
-- [ディレクトリ構成](#ディレクトリ構成)
-- [ページを追加する](#ページを追加する)
-- [スタイルを書く](#スタイルを書く)
-- [JavaScript を書く](#javascript-を書く)
-- [画像を置く](#画像を置く)
-- [ビルド設定を変える](#ビルド設定を変える)
-- [Git 運用ルール](#git-運用ルール)
-- [困ったときは](#困ったときは)
-
----
-
-## 必要な環境
-
-|         | バージョン      | 備考                                           |
-| ------- | --------------- | ---------------------------------------------- |
-| Node.js | **20 LTS 以上** | `.nvmrc` があるので `nvm use` で切り替わります |
-| npm     | 9 以上          | Node に同梱のもので構いません                  |
-
-> **Node 18 を使っている場合の注意**
-> 画像最適化に使う `sharp` は Node 18.17 未満を対象外にしており、`npm install` のときに
-> ネイティブバイナリが黙って入りません。その状態でも HTML / CSS / JS のビルドは通り、
-> 画像だけが「最適化なしのコピー」になります（実行時に警告が出ます）。
-> 画像最適化まで動かしたいときは Node 20 に上げてから `npm install` をやり直してください。
+- [Requirements](#requirements)
+- [Getting Started](#getting-started)
+- [Command List](#command-list)
+- [Directory Structure](#directory-structure)
+- [Adding a Page](#adding-a-page)
+- [Writing Styles](#writing-styles)
+- [Writing JavaScript](#writing-javascript)
+- [Placing Images](#placing-images)
+- [Changing Build Settings](#changing-build-settings)
+- [Git Workflow Rules](#git-workflow-rules)
+- [Troubleshooting](#troubleshooting)
 
 ---
 
-## はじめかた
+## Requirements
+
+|         | Version         | Notes                                          |
+| ------- | ---------------- | ----------------------------------------------- |
+| Node.js | **20 LTS or later** | An `.nvmrc` is provided, so `nvm use` will switch automatically |
+| npm     | 9 or later        | The version bundled with Node is fine           |
+
+> **Note if you're using Node 18**
+> `sharp`, which is used for image optimization, does not support Node versions below 18.17, so the native binary silently fails to install during `npm install`.
+> Even in that state, the HTML/CSS/JS build will still pass — only images will end up as "unoptimized copies" (a warning will appear at runtime).
+> If you need image optimization to work, upgrade to Node 20 and re-run `npm install`.
+
+---
+
+## Getting Started
 
 ```bash
 cd htdocs
-nvm use          # .nvmrc を読んで Node 20 に切り替え
+nvm use          # reads .nvmrc and switches to Node 20
 npm install
 npm run dev
 ```
 
-`npm run dev` でローカルサーバーが立ち上がり、`src/` を保存するたびに反映されます。
-CSS だけはページをリロードせずに差し替わるので、モーダルやアコーディオンを開いたまま
-見た目を調整できます。
+`npm run dev` starts a local server, and changes to `src/` are reflected automatically on save.
+CSS updates are hot-swapped without a page reload, so you can adjust styling while a modal or accordion is open.
 
-最初にやること:
+Things to do first:
 
-1. `htdocs/src/config/site.json` の `site` を実際のサイト情報に書き換える
-2. `htdocs/src/sass/foundation/_variables.scss` の色とフォントを案件のものに変える
-3. `htdocs/src/ejs/index.ejs` の中身を消して、マークアップを書き始める
+1. Update `site` in `htdocs/src/config/site.json` with the actual site information
+2. Update the colors and fonts in `htdocs/src/sass/foundation/_variables.scss` for the project
+3. Clear out `htdocs/src/ejs/index.ejs` and start writing your markup
 
 ---
 
-## コマンド一覧
+## Command List
 
-| コマンド               | 何をするか                                        |
-| ---------------------- | ------------------------------------------------- |
-| `npm run dev`          | 開発サーバー + ファイル監視。出力先は `develop/`  |
-| `npm run build`        | 本番ビルド。CSS / JS を圧縮して `release/` に出力 |
-| `npm run preview`      | 本番ビルドしたものをローカルで表示して確認する    |
-| `npm run images`       | 画像だけ最適化し直す                              |
-| `npm run clean`        | `develop/` と `release/` を消す                   |
-| `npm run format`       | Prettier で全ファイルを整形                       |
-| `npm run format:check` | 整形漏れがないかチェックのみ（CI 向け）           |
+| Command                | What it does                                          |
+| ----------------------- | ------------------------------------------------------ |
+| `npm run dev`          | Dev server + file watcher. Output goes to `develop/`  |
+| `npm run build`        | Production build. Minifies CSS/JS and outputs to `release/` |
+| `npm run preview`      | View the production build locally to check it          |
+| `npm run images`       | Re-optimize images only                                 |
+| `npm run clean`        | Removes `develop/` and `release/`                       |
+| `npm run format`       | Formats all files with Prettier                         |
+| `npm run format:check` | Checks formatting only, without making changes (for CI) |
 
-個別のタスクを直接叩くこともできます。
+You can also run individual tasks directly:
 
 ```bash
-npx gulp html      # EJS のみ
-npx gulp styles    # Sass のみ
-npx gulp scripts   # JS のみ
+npx gulp html      # EJS only
+npx gulp styles    # Sass only
+npx gulp scripts   # JS only
 ```
 
-自動でブラウザを開きたくないときは `BS_OPEN=false npm run dev` としてください。
+If you don't want the browser to open automatically, use `BS_OPEN=false npm run dev`.
 
 ---
 
-## ディレクトリ構成
+## Directory Structure
 
 ```
 htdocs/
-├── build/                    ビルド処理（基本さわらない）
-│   ├── config.js             ★ パス・品質・フラグの設定はここに集約
+├── build/                    Build processing (generally don't touch)
+│   ├── config.js             ★ Paths, quality, and flag settings are consolidated here
 │   ├── webpack.config.js
 │   ├── tasks/                html / styles / scripts / images / serve
 │   └── util/
 │
-├── src/                      ★ 作業するのはここ
-│   ├── config/site.json      サイト情報と全ページの meta
+├── src/                      ★ This is where you work
+│   ├── config/site.json      Site info and meta for all pages
 │   ├── ejs/
-│   │   ├── index.ejs         トップページ
-│   │   ├── about/index.ejs   下層ページのサンプル
-│   │   └── _partials/        head / header / footer など共通パーツ
+│   │   ├── index.ejs         Top page
+│   │   ├── about/index.ejs   Example subpage
+│   │   └── _partials/        Shared parts like head / header / footer
 │   ├── sass/
-│   │   ├── share.scss        CSS のエントリ（@use を並べる場所）
-│   │   ├── _tools.scss       変数・関数・mixin の入口
-│   │   ├── foundation/       リセット、変数、関数、mixin、base
-│   │   ├── layout/           l-  ヘッダー・フッターなど枠組み
-│   │   ├── component/        c-  ボタンなど使い回すパーツ
-│   │   └── page/             p-  ページ固有
+│   │   ├── share.scss        CSS entry point (list @use statements here)
+│   │   ├── _tools.scss       Entry point for variables, functions, mixins
+│   │   ├── foundation/       Reset, variables, functions, mixins, base
+│   │   ├── layout/           l-  Framework elements like header/footer
+│   │   ├── component/        c-  Reusable parts like buttons
+│   │   └── page/             p-  Page-specific styles
 │   ├── js/
-│   │   ├── index.js          エントリ。モジュールを呼ぶだけ
-│   │   └── modules/          機能ごとに分ける
+│   │   ├── index.js          Entry point. Just calls modules
+│   │   └── modules/          Split by feature
 │   └── assets/
-│       ├── img/              最適化される画像
-│       └── data/             そのままコピーされるファイル（PDF・動画など）
+│       ├── img/              Images that get optimized
+│       └── data/             Files copied as-is (PDFs, videos, etc.)
 │
-├── develop/                  開発用の出力（Git 管理外）
-└── release/                  納品用の出力（Git 管理外）
+├── develop/                  Dev output (not tracked by Git)
+└── release/                  Delivery output (not tracked by Git)
 ```
 
-`develop/` と `release/` はビルドのたびに作り直されます。**直接編集しても次のビルドで消えます。**
+`develop/` and `release/` are regenerated on every build. **Editing them directly will be overwritten on the next build.**
 
 ---
 
-## ページを追加する
+## Adding a Page
 
-ページ追加は **2 ステップ** です。
+Adding a page takes **2 steps**.
 
-**1. EJS を置く**
+**1. Place the EJS file**
 
 ```
-src/ejs/company/index.ejs   →  /company/ として出力
-src/ejs/contact.ejs         →  /contact.html として出力
+src/ejs/company/index.ejs   →  output as /company/
+src/ejs/contact.ejs         →  output as /contact.html
 ```
 
-`_` で始まるファイルは部品扱いになり、単体では出力されません。
+Files starting with `_` are treated as partials and are not output on their own.
 
-**2. `src/config/site.json` の `pages` にキーを足す**
+**2. Add a key to `pages` in `src/config/site.json`**
 
-キーは `src/ejs/` からの、拡張子を除いたパスです。
+The key is the path from `src/ejs/`, without the extension.
 
 ```json
 {
   "pages": {
-    "index": { "isTop": true, "title": "サイト名" },
+    "index": { "isTop": true, "title": "Site Name" },
     "company/index": {
-      "title": "会社概要",
-      "description": "このページ専用の説明文",
+      "title": "About Us",
+      "description": "Page-specific description",
       "noindex": false
     }
   }
 }
 ```
 
-`description` などを省略すると `site` の共通値が使われます。
+If you omit `description` or similar fields, the common value from `site` is used instead.
 
-### EJS の中で使える値
+### Values available inside EJS
 
-ページ側で変数を宣言する必要はありません。ビルド時に自動で渡されます。
+You don't need to declare variables on the page side. They're passed in automatically at build time.
 
-| 変数                               | 中身                                                     |
-| ---------------------------------- | -------------------------------------------------------- |
-| `site`                             | `site.json` の `site`（サイト名・baseUrl など）          |
-| `page`                             | そのページの設定 + `id` / `url`                          |
-| `lang`                             | 言語コード                                               |
-| `relative_path`                    | ルートまでの相対パス。`./` や `../` が**自動で入ります** |
-| `isRelease`                        | 本番ビルドなら `true`                                    |
-| `asset(relative_path, ファイル名)` | キャッシュ対策の `?v=` 付き URL を返す                   |
+| Variable                           | Contents                                                  |
+| ----------------------------------- | ---------------------------------------------------------- |
+| `site`                             | The `site` object from `site.json` (site name, baseUrl, etc.) |
+| `page`                             | That page's settings + `id` / `url`                        |
+| `lang`                             | Language code                                               |
+| `relative_path`                    | Relative path to the root. `./` or `../` is **inserted automatically** |
+| `isRelease`                        | `true` for a production build                                |
+| `asset(relative_path, filename)`   | Returns a URL with a `?v=` cache-busting param              |
 
-`relative_path` を各ページで手書きしていた頃の書き間違いは、これで起きません。
+This eliminates the typos that used to happen when `relative_path` was written by hand on each page.
 
-### 開発環境の noindex
+### noindex in development
 
-`npm run dev` で出力した HTML には自動で `<meta name="robots" content="noindex, nofollow">` が入ります。
-確認用 URL がうっかり検索結果に載るのを防ぐためのもので、`npm run build` では入りません。
-特定のページだけ本番でも除外したい場合は `site.json` でそのページに `"noindex": true` を指定します。
+HTML output from `npm run dev` automatically includes `<meta name="robots" content="noindex, nofollow">`.
+This prevents preview URLs from accidentally appearing in search results, and is not included in `npm run build`.
+If you want to exclude a specific page from indexing even in production, set `"noindex": true` for that page in `site.json`.
 
 ---
 
-## スタイルを書く
+## Writing Styles
 
-### 書き始める場所
+### Where to start writing
 
-| 種類                         | 置き場所          | クラス名 |
-| ---------------------------- | ----------------- | -------- |
-| ヘッダー・フッターなど枠組み | `sass/layout/`    | `l-`     |
-| ボタンなど使い回すパーツ     | `sass/component/` | `c-`     |
-| そのページだけのもの         | `sass/page/`      | `p-`     |
+| Type                          | Location           | Class prefix |
+| ------------------------------ | -------------------- | ------------- |
+| Framework elements like header/footer | `sass/layout/`    | `l-`     |
+| Reusable parts like buttons     | `sass/component/` | `c-`     |
+| Page-specific styles            | `sass/page/`      | `p-`     |
 
-ファイルを追加したら `src/sass/share.scss` に `@use` を 1 行足してください。
+After adding a file, add one `@use` line to `src/sass/share.scss`.
 
-### 各ファイルの先頭
+### At the top of each file
 
-変数・関数・mixin は `_tools.scss` にまとめてあるので、**この 1 行だけ**書けば全部使えます。
+Variables, functions, and mixins are all consolidated in `_tools.scss`, so **this one line** gives you access to everything.
 
 ```scss
 @use '../tools' as *;
 ```
 
-### よく使う関数・mixin
+### Frequently used functions and mixins
 
 ```scss
 .foo {
-  font-size: rem(16); // 16px 相当（html が 62.5% なので 1.6rem）
-  width: get-vw(750); // デザインの 750px を vw に変換
-  max-width: get-min(1200); // vw で伸縮しつつ 1200px で頭打ち
-  z-index: z('header'); // 数値の書き散らしを防ぐ
+  font-size: rem(16); // equivalent to 16px (html is set to 62.5%, so this is 1.6rem)
+  width: get-vw(750); // converts 750px from the design to vw
+  max-width: get-min(1200); // scales with vw but caps at 1200px
+  z-index: z('header'); // prevents scattered magic numbers
 
   @include sp {
-    // 767px 以下
+    // 767px and below
     font-size: rem(14);
   }
 
   @include pc {
-    // 768px 以上
+    // 768px and above
     @include hover {
-      // マウスが使える環境のみ hover
+      // hover only on devices that support a mouse
       opacity: 0.7;
     }
   }
 
-  @include container; // 中央寄せ + 左右パディング
-  @include line-clamp(2); // 2 行で「…」
+  @include container; // center + horizontal padding
+  @include line-clamp(2); // truncate to 2 lines with "…"
 }
 
 .title {
-  font-size: fluid(24, 48); // 画面幅に応じて 24px〜48px を滑らかに補間
+  font-size: fluid(24, 48); // smoothly interpolates between 24px and 48px based on screen width
 }
 ```
 
-### 表示の出し分け
+### Showing/hiding by device
 
 ```html
-<p class="u-pc-only">PC だけ表示</p>
-<p class="u-sp-only">SP だけ表示</p>
+<p class="u-pc-only">Shown on PC only</p>
+<p class="u-sp-only">Shown on SP only</p>
 ```
 
-### 色とフォント
+### Colors and fonts
 
-案件ごとに変えるのは `foundation/_variables.scss` の color ブロックだけで済むようにしています。
+Configured so that the only thing you need to change per project is the color block in `foundation/_variables.scss`.
 
-### 外部ライブラリの CSS
+### External library CSS
 
-`foundation/_vendor.scss` にまとめてあります。`node_modules` にパスが通っているので、
-パッケージ名から直接書けます。使わないライブラリは行ごと消してください（そのぶん CSS が軽くなります）。
+Consolidated in `foundation/_vendor.scss`. Since paths resolve through `node_modules`, you can reference packages directly by name.
+Remove the line for any library you're not using (this reduces the resulting CSS size).
 
 ```scss
 @use 'swiper/swiper.css';
@@ -256,43 +253,43 @@ src/ejs/contact.ejs         →  /contact.html として出力
 
 ---
 
-## JavaScript を書く
+## Writing JavaScript
 
-`src/js/index.js` は「何を動かすか」だけを書く場所です。処理は `src/js/modules/` に分けます。
+`src/js/index.js` is where you specify *what* runs. The actual logic is split out into `src/js/modules/`.
 
 ```js
 import { initSlider } from '@/modules/slider';
 ```
 
-`@` は `src/js` を指すエイリアスです。深い階層からでも同じ書き方ができます。
+`@` is an alias pointing to `src/js`. You can use the same import style regardless of how deeply nested the file is.
 
-同梱しているモジュール:
+Included modules:
 
-| モジュール            | 中身                                                          |
-| --------------------- | ------------------------------------------------------------- |
-| `modules/device.js`   | 端末・ブラウザ判定。`body` に `is-sp` / `is-ios` などを付ける |
-| `modules/viewport.js` | モバイルのアドレスバーに影響されない `--vh` を CSS 変数で提供 |
-| `modules/slider.js`   | Swiper のサンプル。要素が無いページでは何もしません           |
+| Module                 | Contents                                                        |
+| ----------------------- | ------------------------------------------------------------------ |
+| `modules/device.js`    | Device/browser detection. Adds classes like `is-sp` / `is-ios` to `body` |
+| `modules/viewport.js`  | Provides a `--vh` CSS variable unaffected by the mobile address bar     |
+| `modules/slider.js`    | A Swiper example. Does nothing on pages without the relevant element    |
 
-### ライブラリを足す
+### Adding a library
 
 ```bash
-npm install パッケージ名
+npm install package-name
 ```
 
-`import` すればそのままバンドルされます。トランスパイルの対象ブラウザは
-`package.json` の `browserslist` を見ています。CSS のベンダープレフィックスも
-同じ設定を参照するので、**対象ブラウザは 1 箇所で管理できます**。
+Just `import` it and it gets bundled automatically. The transpilation target browsers are read from
+`browserslist` in `package.json`. CSS vendor prefixes reference the same setting, so **you manage
+target browsers in a single place**.
 
 ---
 
-## 画像を置く
+## Placing Images
 
-`src/assets/img/` に置くと、ビルド時に最適化されて出力されます。
+Files placed in `src/assets/img/` are optimized automatically at build time.
 
-- `.jpg` / `.png` → 再エンコード + **同じ場所に `.webp` も自動生成**
-- `.svg` → 不要な属性やコメントを削除（`viewBox` は残します）
-- `.gif` / `.ico` → そのままコピー
+- `.jpg` / `.png` → re-encoded, and **a `.webp` version is automatically generated alongside it**
+- `.svg` → unnecessary attributes/comments are stripped (`viewBox` is preserved)
+- `.gif` / `.ico` → copied as-is
 
 ```html
 <picture>
@@ -301,95 +298,95 @@ npm install パッケージ名
 </picture>
 ```
 
-一度出力した画像は、元ファイルを更新するまで再処理されません。
-PDF や動画など変換したくないものは `src/assets/data/` に置いてください（そのままコピーされます）。
+Once an image has been output, it won't be reprocessed unless the source file is updated.
+Place files you don't want converted, such as PDFs or videos, in `src/assets/data/` (these are copied as-is).
 
-品質を変えたいときは `build/config.js` の `images.quality` を調整します。
-
----
-
-## ビルド設定を変える
-
-さわる場所はほぼ `build/config.js` に集約してあります。
-
-| 設定             | 内容                                                            |
-| ---------------- | --------------------------------------------------------------- |
-| `html.beautify`  | `release` の HTML を整形して出力するか（既定 `true`。納品想定） |
-| `images.quality` | JPEG / PNG / WebP の品質                                        |
-| `images.webp`    | `.webp` の自動生成を止めたいときは `false`                      |
-| `server`         | 自動オープンなど browser-sync の設定                            |
-| `src` / `out`    | 入出力パス                                                      |
-
-対象ブラウザは `package.json` の `browserslist` です。
+To adjust quality, edit `images.quality` in `build/config.js`.
 
 ---
 
-## Git 運用ルール
+## Changing Build Settings
 
-### コミットしないもの
+Nearly everything you'd need to change is consolidated in `build/config.js`.
 
-`develop/` と `release/` は **コミットしません**（`.gitignore` 済み）。
-ビルドのたびに内容が変わるファイルなので、追跡すると pull のたびに必ず衝突します。
+| Setting            | Description                                                     |
+| -------------------- | ------------------------------------------------------------------ |
+| `html.beautify`    | Whether to format the `release` HTML output (default `true`; intended for delivery) |
+| `images.quality`   | JPEG / PNG / WebP quality                                           |
+| `images.webp`      | Set to `false` to disable automatic `.webp` generation              |
+| `server`           | browser-sync settings, such as auto-opening the browser             |
+| `src` / `out`      | Input/output paths                                                 |
 
-### コミットメッセージ
+Target browsers are set via `browserslist` in `package.json`.
+
+---
+
+## Git Workflow Rules
+
+### What not to commit
+
+`develop/` and `release/` are **not committed** (already in `.gitignore`).
+Since their contents change on every build, tracking them would cause conflicts on every pull.
+
+### Commit messages
 
 ```
-対応ページ、箇所：対応内容
+Page, location: what was done
 ```
 
-例:
+Example:
 
 ```
-トップ ファーストビュー：スライダーの表示速度を調整
-下層 会社概要：テーブルのSP表示崩れを修正
+Top page first view: adjusted slider transition speed
+Subpage About Us: fixed table layout breaking on SP
 ```
 
 ---
 
-## 困ったときは
+## Troubleshooting
 
-**`npm run dev` でエラーが出る**
-Node のバージョンを確認してください（`node -v` が 20 以上か）。`nvm use` で切り替わります。
+**`npm run dev` throws an error**
+Check your Node version (`node -v` should be 20 or higher). `nvm use` will switch it for you.
 
-**画像が最適化されない / sharp の警告が出る**
-Node 20 に切り替えてから、`npm install` をやり直すか `npm rebuild sharp` を実行してください。
+**Images aren't optimized / sharp warning appears**
+Switch to Node 20, then re-run `npm install` or run `npm rebuild sharp`.
 
-**Sass の変数が見つからないと言われる**
-そのファイルの先頭に `@use '../tools' as *;` があるか確認してください。
-`@use` はファイルごとに必要です（`@import` と違い、他のファイルには波及しません）。
+**Sass says a variable can't be found**
+Check that the file starts with `@use '../tools' as *;`.
+`@use` is required in every file (unlike `@import`, it does not propagate to other files).
 
-**CSS を書いたのに反映されない**
-`src/sass/share.scss` に `@use` を足したか確認してください。
-`_` 始まりのファイルは、どこからも `@use` されないと出力に含まれません。
+**CSS changes aren't showing up**
+Check whether you added the `@use` line to `src/sass/share.scss`.
+Files starting with `_` are not included in the output unless they're `@use`'d from somewhere.
 
-**ビルドは通るのにブラウザで古い CSS が出る**
-CSS / JS の URL には `?v=` が付いているので通常は起きませんが、
-その場合はスーパーリロード（Ctrl+Shift+R）を試してください。
+**Build passes, but the browser shows old CSS**
+This normally shouldn't happen since CSS/JS URLs include a `?v=` param, but if it does,
+try a hard reload (Ctrl+Shift+R).
 
 ---
 
-## 旧テンプレートからの変更点
+## Changes from the Previous Template
 
-以前のテンプレートを使っていた方向けの要点です。
+Key points for those coming from the old template.
 
-|                        | 旧                                                                 | 新                                                                    |
-| ---------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------- |
-| コマンド               | `gulp d` / `gulp r`                                                | `npm run dev` / `npm run build`（`gulp d` / `gulp r` も残しています） |
-| gulpfile               | 1 ファイル約 300 行                                                | `build/tasks/` に分割、`gulpfile.js` は流れだけ                       |
-| meta 情報              | `src/config/meta.json`                                             | `src/config/site.json`（ページごとの上書き・canonical 対応）          |
-| relative_path          | ページごとに手書き                                                 | ビルド時に自動計算                                                    |
-| ベンダープレフィックス | **付いていなかった**（`pleeease.json` はどこからも読まれていない） | autoprefixer + `browserslist`                                         |
-| Sass の構成            | `setting/` + `template/`                                           | `foundation/` `layout/` `component/` `page/`                          |
-| 画像最適化             | imagemin 系 4 パッケージ                                           | `sharp` + `svgo` の 2 つ                                              |
-| 画像の webp            | 別タスクで手動実行                                                 | ビルド時に自動生成                                                    |
-| ソースマップ           | 本番にも出力                                                       | 開発のみ                                                              |
-| キャッシュ対策         | なし                                                               | CSS / JS に `?v=` を自動付与                                          |
+|                          | Old                                                              | New                                                                    |
+| -------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| Commands                 | `gulp d` / `gulp r`                                                | `npm run dev` / `npm run build` (`gulp d` / `gulp r` are still kept) |
+| gulpfile                  | Single file, ~300 lines                                             | Split into `build/tasks/`; `gulpfile.js` just shows the flow          |
+| meta info                 | `src/config/meta.json`                                              | `src/config/site.json` (supports per-page overrides and canonical)   |
+| relative_path             | Hand-written on each page                                            | Calculated automatically at build time                                |
+| Vendor prefixes           | **Not applied** (`pleeease.json` wasn't being read by anything)      | autoprefixer + `browserslist`                                         |
+| Sass structure            | `setting/` + `template/`                                            | `foundation/` `layout/` `component/` `page/`                           |
+| Image optimization        | 4 imagemin-family packages                                           | Just `sharp` + `svgo`                                                  |
+| Image webp                | Run manually as a separate task                                     | Generated automatically at build time                                  |
+| Source maps               | Also output in production                                            | Development only                                                       |
+| Cache busting             | None                                                                 | `?v=` automatically appended to CSS/JS                                 |
 
-Sass 側で挙動が変わっているもの:
+Sass behavior changes to be aware of:
 
-- `.sp-none` → `.u-pc-only`、`.pc-none` → `.u-sp-only`
-  （旧 `.sp-none` は PC でも SP でも `display: none` になっており、常に非表示でした）
-- `body` の文字サイズ
-  （旧テンプレートは `html` と `body` の両方に `font-size: 62.5%` が掛かっており、実寸が 6.25px になっていました）
-- `@include max-screen()` → `@include sp()`、`@include min-screen()` → `@include pc()`
-- `*:focus { outline: 0 }` を廃止し、キーボード操作時のみ表示する `:focus-visible` に変更
+- `.sp-none` → `.u-pc-only`, `.pc-none` → `.u-sp-only`
+  (the old `.sp-none` was set to `display: none` on both PC and SP, so it was always hidden)
+- `body` font size
+  (the old template applied `font-size: 62.5%` to both `html` and `body`, resulting in an actual size of 6.25px)
+- `@include max-screen()` → `@include sp()`, `@include min-screen()` → `@include pc()`
+- Removed `*:focus { outline: 0 }` in favor of `:focus-visible`, which only shows the outline during keyboard navigation
