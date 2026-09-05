@@ -1,0 +1,58 @@
+<%
+/**
+ * head 部。ページ固有の値が無ければ site の既定値にフォールバックします。
+ * ここで使える変数（html タスクが自動で渡しています）:
+ *   site / page / lang / relative_path / isRelease / asset()
+ */
+const title = page.isTop
+  ? site.name
+  : `${page.title}${site.titleSeparator}${site.name}`;
+const description = page.description || site.description;
+const keywords = page.keywords || site.keywords;
+const canonical = site.baseUrl + page.url;
+const ogImage = site.baseUrl + (page.ogImage || site.ogImage);
+%>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="format-detection" content="telephone=no" />
+
+  <title><%= title %></title>
+  <meta name="description" content="<%= description %>" />
+  <% if (keywords) { %>
+  <meta name="keywords" content="<%= keywords %>" />
+  <% } %>
+  <link rel="canonical" href="<%= canonical %>" />
+
+  <%# 公開前のステージング環境をうっかりインデックスさせないための保険 %>
+  <% if (!isRelease || page.noindex) { %>
+  <meta name="robots" content="noindex, nofollow" />
+  <% } %>
+
+  <!-- OGP -->
+  <meta property="og:type" content="<%= page.isTop ? 'website' : 'article' %>" />
+  <meta property="og:site_name" content="<%= site.name %>" />
+  <meta property="og:title" content="<%= title %>" />
+  <meta property="og:description" content="<%= description %>" />
+  <meta property="og:url" content="<%= canonical %>" />
+  <meta property="og:image" content="<%= ogImage %>" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <% if (site.twitterId) { %>
+  <meta name="twitter:site" content="<%= site.twitterId %>" />
+  <% } %>
+
+  <!-- icon -->
+  <link rel="icon" href="<%= relative_path %>assets/img/favicon.ico" />
+  <link rel="apple-touch-icon" href="<%= relative_path %>assets/img/webclip.png" />
+
+  <!-- font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <%# ?v= を付けてブラウザに古い CSS を掴ませない %>
+  <link rel="stylesheet" href="<%= asset(relative_path, 'assets/css/share.css') %>" />
+</head>

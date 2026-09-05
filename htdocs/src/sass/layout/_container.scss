@@ -1,0 +1,10 @@
+@charset "utf-8";
+@use '../tools' as *;
+
+.l-container {
+  @include container;
+}
+
+.l-main {
+  min-height: 60vh;
+}

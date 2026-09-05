@@ -1,0 +1,39 @@
+@charset "utf-8";
+@use '../tools' as *;
+
+// ページ固有のスタイルは p- を付けます。
+.p-hero {
+  @include container;
+  padding-block: rem(80);
+  text-align: center;
+
+  &__title {
+    // 画面幅に応じて 28px 〜 64px の間で滑らかに変化します
+    font-size: fluid(28, 64);
+    letter-spacing: 0.02em;
+  }
+
+  &__lead {
+    margin-top: rem(16);
+    color: $c-gray;
+    font-size: rem(14);
+  }
+}
+
+.p-slider {
+  @include container;
+  margin-top: rem(40);
+
+  .swiper {
+    padding-bottom: rem(40);
+  }
+
+  .swiper-slide {
+    @include center;
+    @include aspect(16, 9);
+    background-color: $c-gray-light;
+    border-radius: rem(8);
+    font-family: $font-en;
+    font-size: rem(20);
+  }
+}

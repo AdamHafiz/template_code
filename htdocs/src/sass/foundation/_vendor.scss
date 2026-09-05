@@ -1,0 +1,11 @@
+@charset "utf-8";
+
+// ===================================================================
+// 外部ライブラリの CSS
+// includePaths に node_modules を通しているので、パッケージ名から書けます。
+// 使わないライブラリはこの行を消してください（そのぶん CSS が軽くなります）。
+// ===================================================================
+
+@use 'swiper/swiper.css';
+@use 'swiper/modules/navigation.css';
+@use 'swiper/modules/pagination.css';

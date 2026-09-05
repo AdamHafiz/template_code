@@ -1,0 +1,28 @@
+@charset "utf-8";
+@use '../tools' as *;
+
+// 使い回すパーツは c- を付けます。
+.c-button {
+  @include center;
+  min-width: rem(200);
+  min-height: rem(52);
+  padding: rem(12) rem(28);
+  border-radius: 999px;
+  background-color: $c-primary;
+  color: $c-white;
+  font-size: rem(15);
+  font-weight: $w-medium;
+  transition: $transition-base;
+
+  @include hover {
+    opacity: 1;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba($c-primary, 0.3);
+  }
+
+  &--outline {
+    background-color: transparent;
+    border: 1px solid $c-primary;
+    color: $c-primary;
+  }
+}

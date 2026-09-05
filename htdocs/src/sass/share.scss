@@ -1,0 +1,28 @@
+@charset "utf-8";
+
+// ===================================================================
+// CSS のエントリポイント。ここに @use を足していきます。
+// 読み込み順は foundation -> vendor -> layout -> component -> page。
+//
+// share.scss と同じ階層に別の .scss を置けば、
+// それも 1 枚の CSS として書き出されます（_ 始まりは部品扱いで単体出力されません）。
+// ===================================================================
+
+// 下地（リセット・変数・base）
+@use 'foundation/reset';
+@use 'foundation/base';
+
+// 外部ライブラリ
+@use 'foundation/vendor';
+
+// 共通レイアウト
+@use 'layout/container';
+@use 'layout/header';
+@use 'layout/footer';
+
+// 使い回すパーツ
+@use 'component/button';
+
+// ページ固有
+@use 'page/top';
+@use 'page/about';

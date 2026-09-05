@@ -1,0 +1,16 @@
+# 依存関係
+node_modules/
+package-lock.json
+
+# ビルド成果物（触っても次のビルドで消えます）
+develop/
+release/
+
+# 圧縮済み・ベンダー提供のファイル
+*.min.js
+*.min.css
+src/sass/foundation/_reset.css
+
+# OS が作るもの
+.DS_Store
+Thumbs.db

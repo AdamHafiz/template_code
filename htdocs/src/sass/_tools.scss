@@ -1,0 +1,12 @@
+@charset "utf-8";
+
+// ===================================================================
+// 変数・関数・mixin の入口。
+// 各パーツの scss は先頭でこの 1 行だけ書けば済みます。
+//
+//   @use '../tools' as *;
+// ===================================================================
+
+@forward './foundation/variables';
+@forward './foundation/functions';
+@forward './foundation/mixins';

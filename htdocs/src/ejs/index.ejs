@@ -1,0 +1,39 @@
+<%#
+  トップページ。
+  ページ ID・言語・relative_path はビルド時に自動で渡されるため、
+  ページ冒頭で変数を宣言する必要はありません。
+  meta 情報は src/config/site.json の pages["index"] を編集してください。
+%>
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+  <%- include('_partials/_head') %>
+  <body id="page-<%= page.id.replace(/\//g, '-') %>">
+    <%- include('_partials/_header') %>
+
+    <main class="l-main">
+      <section class="p-hero">
+        <h1 class="p-hero__title"><%= site.name %></h1>
+        <p class="p-hero__lead">
+          src/ejs/index.ejs を編集してここからマークアップを始めてください。
+        </p>
+      </section>
+
+      <%# Swiper のサンプル。不要なら src/js/index.js の import ごと消してください %>
+      <section class="p-slider">
+        <div class="swiper js-slider">
+          <div class="swiper-wrapper">
+            <div class="swiper-slide">Slide 1</div>
+            <div class="swiper-slide">Slide 2</div>
+            <div class="swiper-slide">Slide 3</div>
+          </div>
+          <div class="swiper-pagination"></div>
+          <button class="swiper-button-prev" type="button"></button>
+          <button class="swiper-button-next" type="button"></button>
+        </div>
+      </section>
+    </main>
+
+    <%- include('_partials/_footer') %>
+    <%- include('_partials/_scripts') %>
+  </body>
+</html>

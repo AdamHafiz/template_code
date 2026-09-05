@@ -1,0 +1,23 @@
+{
+  "lang": "ja",
+  "site": {
+    "name": "サイト名を入れてください",
+    "baseUrl": "https://example.com/",
+    "titleSeparator": " | ",
+    "description": "サイト全体の説明文。ページ側で description を指定するとそちらが優先されます。",
+    "keywords": "キーワード1,キーワード2",
+    "ogImage": "assets/img/ogp.png",
+    "twitterId": "@example",
+    "gtmId": ""
+  },
+  "pages": {
+    "index": {
+      "isTop": true,
+      "title": "サイト名を入れてください"
+    },
+    "about/index": {
+      "title": "このテンプレートについて",
+      "description": "下層ページの書き方サンプルです。relative_path は自動で計算されます。"
+    }
+  }
+}

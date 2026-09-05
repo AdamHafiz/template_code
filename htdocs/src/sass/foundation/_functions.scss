@@ -1,0 +1,56 @@
+@charset "utf-8";
+@use 'sass:map';
+@use 'sass:math';
+@use './variables' as *;
+
+// ===================================================================
+// 関数
+// ===================================================================
+
+/// デザインデータの px をそのまま vw に変換する
+/// @example get-vw(750) => 100vw （$vp-sp 基準のとき）
+@function get-vw($size, $viewport: $vp-sp) {
+  @return math.div($size, $viewport) * 100vw;
+}
+
+@function get-vh($size, $viewport: $vp-sp) {
+  @return math.div($size, $viewport) * 100vh;
+}
+
+/// 可変（vw）だが、指定 px を上限にする
+/// min() / max() は引数を補間して素の CSS 関数として出力させる。
+/// 補間しないと Sass が vw と px を計算しようとして単位不一致で落ちる。
+@function get-min($size, $viewport: $vp-pc) {
+  @return min(#{get-vw($size, $viewport)}, #{$size * 1px});
+}
+
+/// 可変（vw）だが、指定 px を下限にする
+@function get-max($size, $viewport: $vp-pc) {
+  @return max(#{get-vw($size, $viewport)}, #{$size * 1px});
+}
+
+/// px を rem に変換する（html の font-size 62.5% = 10px 基準）
+@function rem($px) {
+  @return math.div($px, 10) * 1rem;
+}
+
+/// 画面幅に応じて滑らかに変化するサイズ。見出しなどに。
+/// @example font-size: fluid(24, 48);
+@function fluid($min-px, $max-px, $min-vw: 375, $max-vw: $vp-pc) {
+  $slope: math.div($max-px - $min-px, $max-vw - $min-vw);
+  $intercept: $min-px - $slope * $min-vw;
+
+  @return clamp(
+    #{$min-px * 1px},
+    #{$intercept * 1px} + #{$slope * 100vw},
+    #{$max-px * 1px}
+  );
+}
+
+/// z-index をマップから引く。数値の書き散らしを防ぐ。
+@function z($key) {
+  @if not map.has-key($z-index, $key) {
+    @error '$z-index に "#{$key}" がありません。';
+  }
+  @return map.get($z-index, $key);
+}

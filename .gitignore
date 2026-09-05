@@ -1,0 +1,23 @@
+# 依存関係
+node_modules/
+
+# ビルド成果物
+# develop/ と release/ は毎回作り直されるので追跡しません。
+# （commit すると pull のたびに必ず衝突します）
+htdocs/develop/
+htdocs/release/
+
+# キャッシュ
+.cache/
+.sass-cache/
+*.log
+npm-debug.log*
+
+# OS / エディタ
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+
+# .vscode は共有したいので追跡する（設定を揃えるため）
+!.vscode/

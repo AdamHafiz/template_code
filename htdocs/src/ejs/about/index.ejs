@@ -1,0 +1,28 @@
+<%#
+  下層ページのサンプル。
+  ディレクトリを掘っても relative_path（ここでは '../'）は自動で解決されます。
+%>
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+  <%- include('../_partials/_head') %>
+  <body id="page-<%= page.id.replace(/\//g, '-') %>">
+    <%- include('../_partials/_header') %>
+
+    <main class="l-main">
+      <section class="p-page-head">
+        <h1 class="p-page-head__title"><%= page.title %></h1>
+      </section>
+
+      <div class="l-container">
+        <p>
+          このページは <code>src/ejs/about/index.ejs</code> です。ページを増やすときは
+          <code>src/config/site.json</code> の <code>pages</code> に
+          <code>"about/index"</code> のようなキーを足してください。
+        </p>
+      </div>
+    </main>
+
+    <%- include('../_partials/_footer') %>
+    <%- include('../_partials/_scripts') %>
+  </body>
+</html>

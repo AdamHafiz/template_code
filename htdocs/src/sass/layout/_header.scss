@@ -1,0 +1,41 @@
+@charset "utf-8";
+@use '../tools' as *;
+
+.l-header {
+  position: sticky;
+  top: 0;
+  z-index: z('header');
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: rem(24);
+  padding: rem(16) $container-padding;
+  background-color: rgba($c-bg, 0.9);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid $c-gray-light;
+
+  &__logo {
+    font-size: rem(18);
+    font-weight: $w-bold;
+    letter-spacing: 0.04em;
+  }
+
+  &__nav {
+    ul {
+      display: flex;
+      gap: rem(24);
+    }
+
+    a {
+      font-family: $font-en;
+      font-size: rem(14);
+      letter-spacing: 0.08em;
+    }
+
+    @include sp {
+      ul {
+        gap: rem(16);
+      }
+    }
+  }
+}
